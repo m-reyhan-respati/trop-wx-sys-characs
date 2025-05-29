@@ -3,8 +3,6 @@ import pandas as pd
 import xarray as xr
 from glob import glob
 
-from config import *
-
 # For all functions defined below, TLL means 3D shaped (time, lat, lon) and TLLL means 4D shaped (time, lev, lat, lon)
 
 def next2n(x):
