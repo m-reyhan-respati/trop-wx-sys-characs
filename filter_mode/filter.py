@@ -3,6 +3,8 @@ import pandas as pd
 import xarray as xr
 from glob import glob
 
+from config import *
+
 # For all functions defined below, TLL means 3D shaped (time, lat, lon) and TLLL means 4D shaped (time, lev, lat, lon)
 
 def next2n(x):
@@ -63,7 +65,7 @@ def remove_tc_TLL(x, time, lat, lon):
     
     lon2d, lat2d = np.meshgrid(lon.data, lat.data)
     
-    f = xr.open_dataset(str(IBTrACS_FILE))
+    f = xr.open_dataset(IBTrACS_FILE)
     
     time_tc = f["time"]
     lat_tc = f["lat"]
@@ -104,7 +106,7 @@ def remove_tc_TLLL(x, time, lat, lon):
 
     lon2d, lat2d = np.meshgrid(lon.data, lat.data)
 
-    f = xr.open_dataset(str(IBTrACS_FILE))
+    f = xr.open_dataset(IBTrACS_FILE)
 
     time_tc = f["time"]
     lat_tc = f["lat"]
