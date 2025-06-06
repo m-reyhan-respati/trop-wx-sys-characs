@@ -141,7 +141,12 @@ def open_gpm_ia39_per_year(var_name, year, spd, lat_min=-90.0, lat_max=90.0, lon
     
         x = xr.open_dataset(filei[0])[var_name].sel(lon=slice(lon_min, lon_max), lat=slice(lat_min, lat_max))
     
-    x = x.resample(time=f"{24 // spd:d}h").mean()
+    if spd == 48:
+        pass
+    elif 24 % spd == 0:
+        x = x.resample(time=f"{24 // spd:d}h").mean()
+    else:
+        sys.exit("spd must be a factor of 24 or spd must be 48")
     
     for i in range(1, len(dates)):
         filei = sorted(glob(f"{GPM_IA39_DIR}/{year:04d}/3B-HHR.MS.MRG.3IMERG.{dates[i].year:04d}{dates[i].month:02d}{dates[i].day:02d}*"))
@@ -161,7 +166,12 @@ def open_gpm_ia39_per_year(var_name, year, spd, lat_min=-90.0, lat_max=90.0, lon
     
             xi = xr.open_dataset(filei[0])[var_name].sel(lon=slice(lon_min, lon_max), lat=slice(lat_min, lat_max))
     
-        xi = xi.resample(time=f"{24 // spd:d}h").mean()
+        if spd == 48:
+            pass
+        elif 24 % spd == 0:
+            xi = xi.resample(time=f"{24 // spd:d}h").mean()
+        else:
+            sys.exit("spd must be a factor of 24 or spd must be 48")
     
         x = xr.concat([x, xi], dim="time")
     
