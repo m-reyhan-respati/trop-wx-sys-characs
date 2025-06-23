@@ -15,15 +15,15 @@ lat_max_list[-1] = 30.5
 env_vars = {}
 env_vars["YEAR_START"] = 1984
 env_vars["YEAR_END"] = 2016
-env_vars["DIRO"] = f"/scratch/k10/mr4682/data/ISCCP/txuptp/tmp/"
+env_vars["DIRO"] = f"{SCRATCH_ISCCP_DIR}/txuptp/tmp/"
 
 pbs_dir = f"{ROOT_DIR}/pbs_scripts/"
-ncpus = 48
+ncpus = 1
 mem = 100
 jobfsmem = 1
 queue = "normal"
 project = "k10"
-walltime = "06:00:00"
+walltime = "01:00:00"
 storage = "gdata/xp65+gdata/k10+scratch/k10"
 command = f"""cd {ROOT_DIR}
 
