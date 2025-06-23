@@ -176,3 +176,167 @@ def open_gpm_ia39_per_year(var_name, year, spd, lat_min=-90.0, lat_max=90.0, lon
         x = xr.concat([x, xi], dim="time")
     
     return x
+
+def regrid_era5_TLL_per_year(folder_name, var_name, year, spd, res_new, lat_min, lat_max, lon_min, lon_max, method="bilinear", periodic=True):
+    import xesmf as xe
+    
+    files = sorted(glob(f"{ERA5_RT52_DIR}/single-levels/reanalysis/{folder_name}/{year:04d}/*.nc"))
+
+    if len(files) == 0:
+        sys.exit(f"No .nc files are found in {ERA5_RT52_DIR}/single-levels/reanalysis/{folder_name}/{year:04d}/")
+    
+    if periodic:
+        ds_0 = xr.open_dataset(files[0]).sel(latitude=slice(lat_max, lat_min)).resample(time=f"{24 // spd:d}h").mean()
+    else:
+        ds_0 = xr.open_dataset(files[0]).sel(latitude=slice(lat_max, lat_min), longitude=slice(lon_min, lon_max)).resample(time=f"{24 // spd:d}h").mean()
+    
+    attrs = ds_0[var_name].attrs
+
+    ds_new = xr.Dataset(
+        {
+            "latitude": (["latitude"], np.arange(lat_min, lat_max + res_new, res_new), {"units": "degrees_north"}),
+            "longitude": (["longitude"], np.arange(lon_min, lon_max + res_new, res_new), {"units": "degrees_east"})
+        }
+    )
+
+    regridder_0 = xe.Regridder(ds_0, ds_new, method, periodic=periodic)
+
+    ds_new = regridder_0(ds_0)
+    
+    for i in range(1, len(files)):
+        if periodic:
+            ds_i = xr.open_dataset(files[i]).sel(latitude=slice(lat_max, lat_min)).resample(time=f"{24 // spd:d}h").mean()
+        else:
+            ds_i = xr.open_dataset(files[i]).sel(latitude=slice(lat_max, lat_min), longitude=slice(lon_min, lon_max)).resample(time=f"{24 // spd:d}h").mean()
+        
+        ds_i_new = xr.Dataset(
+                {
+                    "latitude": (["latitude"], np.arange(lat_min, lat_max + res_new, res_new), {"units": "degrees_north"}),
+                    "longitude": (["longitude"], np.arange(lon_min, lon_max + res_new, res_new), {"units": "degrees_east"})
+                }
+        )
+        
+        regridder_i = xe.Regridder(ds_i, ds_i_new, method, periodic=periodic)
+        
+        ds_i_new = regridder_i(ds_i)
+        
+        ds_new = xr.concat([ds_new, ds_i_new], dim="time")
+    
+    return ds_new[var_name].assign_attrs(attrs)
+
+def regrid_era5_TLLL_per_year(folder_name, var_name, year, spd, res_new, lat_min, lat_max, lon_min, lon_max, method="bilinear", periodic=True):
+    import xesmf as xe
+
+    files = sorted(glob(f"{ERA5_RT52_DIR}/pressure-levels/reanalysis/{folder_name}/{year:04d}/*.nc"))
+
+    if len(files) == 0:
+        sys.exit(f"No .nc files are found in {ERA5_RT52_DIR}/pressure-levels/reanalysis/{folder_name}/{year:04d}/")
+
+    if periodic:
+        ds_0 = xr.open_dataset(files[0]).sel(latitude=slice(lat_max, lat_min)).resample(time=f"{24 // spd:d}h").mean()
+    else:
+        ds_0 = xr.open_dataset(files[0]).sel(latitude=slice(lat_max, lat_min), longitude=slice(lon_min, lon_max)).resample(time=f"{24 // spd:d}h").mean()
+
+    attrs = ds_0[var_name].attrs
+
+    ds_new = xr.Dataset(
+        {
+            "latitude": (["latitude"], np.arange(lat_min, lat_max + res_new, res_new), {"units": "degrees_north"}),
+            "longitude": (["longitude"], np.arange(lon_min, lon_max + res_new, res_new), {"units": "degrees_east"})
+        }
+    )
+
+    regridder_0 = xe.Regridder(ds_0, ds_new, method, periodic=periodic)
+
+    ds_new = regridder_0(ds_0)
+
+    for i in range(1, len(files)):
+        if periodic:
+            ds_i = xr.open_dataset(files[i]).sel(latitude=slice(lat_max, lat_min)).resample(time=f"{24 // spd:d}h").mean()
+        else:
+            ds_i = xr.open_dataset(files[i]).sel(latitude=slice(lat_max, lat_min), longitude=slice(lon_min, lon_max)).resample(time=f"{24 // spd:d}h").mean()
+
+        ds_i_new = xr.Dataset(
+                {
+                    "latitude": (["latitude"], np.arange(lat_min, lat_max + res_new, res_new), {"units": "degrees_north"}),
+                    "longitude": (["longitude"], np.arange(lon_min, lon_max + res_new, res_new), {"units": "degrees_east"})
+                }
+        )
+
+        regridder_i = xe.Regridder(ds_i, ds_i_new, method, periodic=periodic)
+        
+        ds_i_new = regridder_i(ds_i)
+
+        ds_new = xr.concat([ds_new, ds_i_new], dim="time")
+
+    return ds_new[var_name].assign_attrs(attrs)
+
+def regrid_era5_TLLL_per_level_per_year(folder_name, var_name, level, year, spd, res_new, lat_min, lat_max, lon_min, lon_max, method="bilinear", periodic=True):
+    import xesmf as xe
+
+    files = sorted(glob(f"{ERA5_RT52_DIR}/pressure-levels/reanalysis/{folder_name}/{year:04d}/*.nc"))
+
+    if len(files) == 0:
+        sys.exit(f"No .nc files are found in {ERA5_RT52_DIR}/pressure-levels/reanalysis/{folder_name}/{year:04d}/")
+
+    if periodic:
+        ds_0 = xr.open_dataset(files[0]).sel(level=slice(level, level), latitude=slice(lat_max, lat_min)).resample(time=f"{24 // spd:d}h").mean()
+    else:
+        ds_0 = xr.open_dataset(files[0]).sel(level=slice(level, level), latitude=slice(lat_max, lat_min), longitude=slice(lon_min, lon_max)).resample(time=f"{24 // spd:d}h").mean()
+
+    attrs = ds_0[var_name].attrs
+
+    ds_new = xr.Dataset(
+        {
+            "latitude": (["latitude"], np.arange(lat_min, lat_max + res_new, res_new), {"units": "degrees_north"}),
+            "longitude": (["longitude"], np.arange(lon_min, lon_max + res_new, res_new), {"units": "degrees_east"})
+        }
+    )
+
+    regridder_0 = xe.Regridder(ds_0, ds_new, method, periodic=periodic)
+
+    ds_new = regridder_0(ds_0)
+
+    for i in range(1, len(files)):
+        if periodic:
+            ds_i = xr.open_dataset(files[i]).sel(level=slice(level, level), latitude=slice(lat_max, lat_min)).resample(time=f"{24 // spd:d}h").mean()
+        else:
+            ds_i = xr.open_dataset(files[i]).sel(level=slice(level, level), latitude=slice(lat_max, lat_min), longitude=slice(lon_min, lon_max)).resample(time=f"{24 // spd:d}h").mean()
+
+        ds_i_new = xr.Dataset(
+                {
+                    "latitude": (["latitude"], np.arange(lat_min, lat_max + res_new, res_new), {"units": "degrees_north"}),
+                    "longitude": (["longitude"], np.arange(lon_min, lon_max + res_new, res_new), {"units": "degrees_east"})
+                }
+        )
+
+        regridder_i = xe.Regridder(ds_i, ds_i_new, method, periodic=periodic)
+        
+        ds_i_new = regridder_i(ds_i)
+
+        ds_new = xr.concat([ds_new, ds_i_new], dim="time")
+
+    return ds_new[var_name].assign_attrs(attrs)
+
+def add_clim_to_anom(clim, anom, spd):
+    x = np.zeros(anom.shape) * np.nan
+    
+    for i in range(0, spd):
+        clim_i = clim[i::spd, ...]
+        clim_i = clim_i.assign_coords({"dayofyear": clim_i["dayofyear"].astype(int)})
+        
+        anom_i = anom[i::spd, ...]
+        
+        x_i = anom_i.groupby("time.dayofyear") + clim_i
+        
+        x[i::spd, ...] = x_i.values
+    
+    x = xr.DataArray(x, dims=anom.dims, coords=anom.coords, attrs=anom.attrs)
+    
+    return x
+
+def calc_dse(t, z):
+    dse = t.values * 1005.0 + z.values
+    dse = xr.DataArray(dse, dims=t.dims, coords=t.coords, attrs={"long_name": "Dry static energy", "units": "J kg**-1"})
+
+    return dse
