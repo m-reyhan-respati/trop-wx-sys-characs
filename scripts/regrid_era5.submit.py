@@ -14,8 +14,8 @@ year_end = 2016
 years = np.arange(year_start, year_end + 1, 1, dtype=int)
 
 env_vars = {}
-env_vars["FOLDER_NAME"] = "d"
-env_vars["VAR_NAME"] = "d"
+env_vars["FOLDER_NAME"] = "vo"
+env_vars["VAR_NAME"] = "vo"
 env_vars["LEVEL_TYPE"] = "pressure-levels"
 env_vars["LAT_MIN"] = -30.5
 env_vars["LAT_MAX"] = -env_vars["LAT_MIN"]
@@ -30,7 +30,7 @@ ncpus = 48
 mem = 75
 jobfsmem = 1
 queue = "normal"
-project = "k10"
+project = "if69"
 walltime = "01:00:00"
 storage = "gdata/xp65+gdata/rt52+scratch/k10"
 command = f"""cd {ROOT_DIR}
