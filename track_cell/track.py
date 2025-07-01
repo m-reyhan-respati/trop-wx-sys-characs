@@ -121,3 +121,27 @@ def count_max_activity(max_activity):
     x = xr.DataArray(x, dims=["latitude", "longitude"], coords={"latitude": lat, "longitude": lon})
 
     return x
+
+def quality_control(track, spd):
+    cells = np.unique(track["cell"].values)
+    
+    cells_to_use = []
+    
+    for cell in cells:
+        time_n = track.loc[track["cell"] == cell]["timestr"].values
+        lat_n = track.loc[track["cell"] == cell]["latitude"].values
+        lon_n = track.loc[track["cell"] == cell]["longitude"].values
+        
+        time = pd.date_range(start=time_n[0], end=time_n[-1], freq=f"{24 // spd:d}h")
+        
+        if np.any(np.isnan(lat_n)) | np.any(np.isnan(lon_n)):
+            continue
+        
+        if len(time_n) != len(time.values):
+            continue
+        
+        cells_to_use.append(cell)
+    
+    track_new = track.loc[np.isin(track["cell"].values, cells_to_use)]
+    
+    return track_new
