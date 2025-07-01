@@ -18,11 +18,11 @@ env_vars["DIRO"] = "/scratch/k10/mr4682/data/GPM/3hr_mean_precipitation_associat
 
 pbs_dir = f"{ROOT_DIR}/pbs_scripts/"
 ncpus = 1
-mem = 100
+mem = 75
 jobfsmem = 1
 queue = "normal"
-project = "gb02"
-walltime = "12:00:00"
+project = "k10"
+walltime = "04:00:00"
 storage = "gdata/xp65+scratch/k10"
 command = f"""cd {ROOT_DIR}
 
