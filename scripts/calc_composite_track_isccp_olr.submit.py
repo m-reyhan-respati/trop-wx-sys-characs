@@ -8,20 +8,20 @@ script_dir = f"{ROOT_DIR}/scripts/"
 script_filename = "calc_composite_track_isccp_olr.py"
 
 env_vars = {}
-env_vars["FILE_NAME"] = "z"
-env_vars["VAR_NAME"] = "z"
+env_vars["FILE_NAME"] = "q"
+env_vars["VAR_NAME"] = "q"
 env_vars["YEAR_START"] = 1984
 env_vars["YEAR_END"] = 2016
 env_vars["FILTERED"] = 0
 env_vars["DIRI"] = f"{SCRATCH_ERA5_DIR}/{env_vars['FILE_NAME']}/"
 env_vars["DIRO"] = f"{env_vars['DIRI']}composites/"
 
-pbs_dir = f"{ROOT_DIR}/pbs_scripts/"
+pbs_dir = f"{ROOT_DIR}/pbs_scripts/test/"
 ncpus = 1
 mem = 75
 jobfsmem = 1
 queue = "normal"
-project = "gb02"
+project = "k10"
 walltime = "01:00:00"
 storage = "gdata/xp65+scratch/k10"
 command = f"""cd {ROOT_DIR}
@@ -65,7 +65,7 @@ for level in levels:
         submit_job.submit.submit_job(env_vars, pbs_script, jobs_id)
     
     if len(jobs_id) != 0:
-        submit_job.check.check_job_status(jobs_id)
+        submit_job.check.check_job_status(jobs_id, time_delay=90)
 
 # Following block of codes is for single-levels variables. Comment them if you want to use pressure-levels variables.
 '''
