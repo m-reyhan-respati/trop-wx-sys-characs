@@ -18,11 +18,11 @@ env_vars["DIRO"] = "/scratch/k10/mr4682/data/GPM/3hr_max_precipitation/percentil
 
 pbs_dir = f"{ROOT_DIR}/pbs_scripts/"
 ncpus = 1
-mem = 100
+mem = 75
 jobfsmem = 1
 queue = "normal"
 project = "k10"
-walltime = "01:00:00"
+walltime = "00:30:00"
 storage = "gdata/xp65+scratch/k10"
 command = f"""cd {ROOT_DIR}
 

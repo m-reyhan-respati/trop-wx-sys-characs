@@ -6,7 +6,7 @@ from config import *
 import submit_job
 
 script_dir = f"{ROOT_DIR}/scripts/"
-script_filename = "calc_percentile_mean_precipitation.py"
+script_filename = "calc_percentile_duration.py"
 
 lat_min_list = np.arange(-30.5, 30.5, 2.0)
 lat_max_list = lat_min_list + 1.9
@@ -14,7 +14,7 @@ lat_max_list[-1] = 30.5
 
 env_vars = {}
 env_vars["PERCENTILE"] = 95
-env_vars["DIRO"] = "/scratch/k10/mr4682/data/GPM/3hr_mean_precipitation/percentiles/"
+env_vars["DIRO"] = "/scratch/k10/mr4682/data/GPM/3hr_duration/percentiles/"
 
 pbs_dir = f"{ROOT_DIR}/pbs_scripts/"
 ncpus = 1
@@ -46,7 +46,7 @@ for i in range(0, len(lat_min_list)):
     else:
         lat_max_string = f"{lat_max_list[i]:.2f}N"
     
-    files = sorted(glob(f"{env_vars['DIRO']}precipitation.{env_vars['PERCENTILE']:d}p.{lat_min_string}_{lat_max_string}.nc"))
+    files = sorted(glob(f"{env_vars['DIRO']}duration.{env_vars['PERCENTILE']:d}p.{lat_min_string}_{lat_max_string}.nc"))
     
     if len(files) != 0:
         continue

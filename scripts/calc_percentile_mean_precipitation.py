@@ -36,6 +36,7 @@ ds = xr.open_mfdataset(files, preprocess=_preprocess)
 precipitation = ds["precipitation"].compute()
 
 precipitation *= 3.0
+precipitation = xr.where(precipitation > 0.0, precipitation, np.nan)
 precipitation = precipitation.assign_attrs({"units": "mm"})
 
 precipitation_ALL_percentile = precipitation.quantile(percentile / 100, dim="time", keep_attrs=True, skipna=True)

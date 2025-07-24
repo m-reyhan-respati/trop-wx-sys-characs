@@ -34,6 +34,7 @@ files = sorted(glob(f"/scratch/k10/mr4682/data/GPM/3hr_max_precipitation/max_pre
 ds = xr.open_mfdataset(files, preprocess=_preprocess)
 
 max_precipitation = ds["max_precipitation"].compute()
+max_precipitation = xr.where(max_precipitation > 0.0, max_precipitation, np.nan)
 
 max_precipitation_ALL_percentile = max_precipitation.quantile(percentile / 100, dim="time", keep_attrs=True, skipna=True)
 max_precipitation_DJF_percentile = max_precipitation[max_precipitation["time"].dt.season == "DJF", ...].quantile(percentile / 100, dim="time", keep_attrs=True, skipna=True)
