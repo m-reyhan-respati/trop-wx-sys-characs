@@ -8,8 +8,8 @@ script_dir = f"{ROOT_DIR}/scripts/"
 script_filename = "calc_composite_track_isccp_olr.py"
 
 env_vars = {}
-env_vars["FILE_NAME"] = "q"
-env_vars["VAR_NAME"] = "q"
+env_vars["FILE_NAME"] = "d"
+env_vars["VAR_NAME"] = "d"
 env_vars["YEAR_START"] = 1984
 env_vars["YEAR_END"] = 2016
 env_vars["FILTERED"] = 0
@@ -36,8 +36,8 @@ modes = ["Moisture Mode", "Mixed System", "IG Wave", "Eastward Moisture Mode", "
 
 # Following block of codes is for pressure-levels variables. Comment them if you want to use single-levels variables.
 
-levels = [100, 125, 150, 175, 200, 225, 250, 300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 775, 800, 825, 850, 875, 900, 925, 950, 975, 1000]
-
+#levels = [100, 125, 150, 175, 200, 225, 250, 300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 775, 800, 825, 850, 875, 900, 925, 950, 975, 1000]
+levels = [850]
 len_file_name_string = len(env_vars["FILE_NAME"])
 
 for level in levels:
