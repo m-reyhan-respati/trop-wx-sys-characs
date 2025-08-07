@@ -81,6 +81,7 @@ for season in seasons:
     elif season == "SON":
         track_in_season = track.loc[(pd.to_datetime(track["timestr"]).dt.month >= 9) & (pd.to_datetime(track["timestr"]).dt.month <= 11)]
     
+    count_track = track_cell.track.quality_control(track_in_season, spd=8)
     count_track = track_cell.track.count_track(track_in_season)
     
     count_track = count_track.assign_attrs({"long_name": f"Number of detected centres for {mode} OLR objects ({season})"})
