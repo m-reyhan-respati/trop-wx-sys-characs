@@ -64,47 +64,8 @@ def count_track(track):
     
     x = np.zeros((len(lat), len(lon)), dtype=int)
     
-    cells = np.unique(track["cell"].values)
-    
-    for cell in cells:
-        time_n = track.loc[track["cell"] == cell]["timestr"].values
-        lat_n = track.loc[track["cell"] == cell]["latitude"].values
-        lon_n = track.loc[track["cell"] == cell]["longitude"].values
-
-        if np.any(np.isnan(lat_n)) | np.any(np.isnan(lon_n)):
-            continue
-
-        if len(time_n) != int((pd.to_datetime(time_n[-1]) - pd.to_datetime(time_n[0])) / pd.Timedelta(3, "h") + 1):
-            print("##################################################")
-            print(f"Cell #{cell}: ")
-            print("time_n:")
-            print(time_n)
-            continue
-        
-        for i in range(0, len(time_n)):
-            lat_i = lat_n[i]
-            lon_i = lon_n[i]
-            
-            lat_i_index = np.argmin(np.abs(lat - lat_i))
-            lon_i_index = np.argmin(np.abs(lon - lon_i))
-            
-            x[lat_i_index, lon_i_index] += 1
-    
-    lat = xr.DataArray(lat, dims=["latitude"], coords={"latitude": lat}, attrs={"long_name": "latitude", "units": "degrees_north"})
-    lon = xr.DataArray(lon, dims=["longitude"], coords={"longitude": lon}, attrs={"long_name": "longitude", "units": "degrees_east"})
-    
-    x = xr.DataArray(x, dims=["latitude", "longitude"], coords={"latitude": lat, "longitude": lon})
-    
-    return x
-
-def count_max_activity(max_activity):
-    lat = np.arange(-30.5, 30.5 + 1.0, 1.0)
-    lon = np.arange(0.5, 359.5 + 1.0, 1.0)
-    
-    x = np.zeros((len(lat), len(lon)), dtype=int)
-    
-    lat_n = max_activity["latitude"].values
-    lon_n = max_activity["longitude"].values
+    lat_n = track["latitude"].values
+    lon_n = track["longitude"].values
     
     for i in range(0, len(lat_n)):
         lat_i = lat_n[i]
