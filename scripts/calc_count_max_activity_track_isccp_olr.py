@@ -81,7 +81,7 @@ for season in seasons:
     elif season == "SON":
         max_activity_in_season = max_activity.loc[(pd.to_datetime(max_activity["timestr"]).dt.month >= 9) & (pd.to_datetime(max_activity["timestr"]).dt.month <= 11)]
     
-    count_max_activity = track_cell.track.count_max_activity(max_activity_in_season)
+    count_max_activity = track_cell.track.count_track(max_activity_in_season)
     
     count_max_activity = count_max_activity.assign_attrs({"long_name": f"Number of detected centres for {mode} OLR objects at their maximum activity ({season})"})
     
