@@ -22,14 +22,14 @@ spd = int(os.environ.get("SPD"))
 diro = os.environ.get("DIRO")
 
 if lat_min < 0:
-    lat_min_string = f"{np.abs(lat_min):.2f}S"
+    lat_min_string = f"{np.abs(lat_min + 0.05):.2f}S"
 else:
-    lat_min_string = f"{lat_min:.2f}N"
+    lat_min_string = f"{lat_min + 0.05:.2f}N"
 
 if lat_max < 0:
-    lat_max_string = f"{np.abs(lat_max):.2f}S"
+    lat_max_string = f"{np.abs(lat_max - 0.05):.2f}S"
 else:
-    lat_max_string = f"{lat_max:.2f}N"
+    lat_max_string = f"{lat_max - 0.05:.2f}N"
 
 def _preprocess(ds):
     return ds.sel(lat=slice(lat_min, lat_max))
