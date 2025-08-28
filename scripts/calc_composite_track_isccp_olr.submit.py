@@ -16,7 +16,7 @@ env_vars["FILTERED"] = 0
 env_vars["DIRI"] = f"{SCRATCH_ERA5_DIR}/{env_vars['FILE_NAME']}/"
 env_vars["DIRO"] = f"{env_vars['DIRI']}composites/"
 
-pbs_dir = f"{ROOT_DIR}/pbs_scripts/test/"
+pbs_dir = f"{ROOT_DIR}/pbs_scripts/"
 ncpus = 1
 mem = 75
 jobfsmem = 1
