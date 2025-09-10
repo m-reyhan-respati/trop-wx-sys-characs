@@ -14,10 +14,10 @@ year_end = 2016
 years = np.arange(year_start, year_end + 1, 1, dtype=int)
 
 env_vars = {}
-env_vars["FILE_NAME"] = "precipitation"
-env_vars["VAR_NAME"] = "precipitation"
+env_vars["FILE_NAME"] = "duration"
+env_vars["VAR_NAME"] = "duration"
 env_vars["FILTERED"] = 0
-env_vars["DIRI"] = f"{SCRATCH_GPM_DIR}/3hr_mean_{env_vars['FILE_NAME']}/clim.and.anom/"
+env_vars["DIRI"] = f"{SCRATCH_GPM_DIR}/3hr_{env_vars['FILE_NAME']}/clim.and.anom/"
 env_vars["DIRO"] = f"{env_vars['DIRI']}stacks/"
 
 pbs_dir = f"{ROOT_DIR}/pbs_scripts/"
@@ -25,7 +25,7 @@ ncpus = 48
 mem = 40
 jobfsmem = 1
 queue = "normal"
-project = "if69"
+project = "fy29"
 walltime = "01:00:00"
 storage = "gdata/xp65+scratch/k10"
 command = f"""cd {ROOT_DIR}
@@ -53,7 +53,7 @@ for year in years:
     for month in np.arange(month_start, month_end + 1, 1, dtype=int):
         env_vars["MONTH"] = month
         
-        for mode in modes:
+        for mode in modes[9:10]:
             env_vars["MODE"] = mode
             
             if env_vars["FILTERED"] == 0:
