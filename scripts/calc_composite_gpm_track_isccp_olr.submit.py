@@ -8,24 +8,24 @@ import submit_job
 script_dir = f"{ROOT_DIR}/scripts/"
 script_filename = "calc_composite_gpm_track_isccp_olr.py"
 
-lagmax = 1
+lagmax = 0
 
 lags = np.arange(-lagmax, lagmax + 1.0, 1.0) * 3.0
 
 env_vars = {}
-env_vars["FILE_NAME"] = "precipitation"
-env_vars["VAR_NAME"] = "precipitation"
+env_vars["FILE_NAME"] = "duration"
+env_vars["VAR_NAME"] = "duration"
 env_vars["FILTERED"] = 0
-env_vars["DIRI"] = f"{SCRATCH_GPM_DIR}/3hr_mean_{env_vars['FILE_NAME']}/clim.and.anom/"
+env_vars["DIRI"] = f"{SCRATCH_GPM_DIR}/3hr_{env_vars['FILE_NAME']}/clim.and.anom/"
 env_vars["DIRO"] = f"{env_vars['DIRI']}composites/"
 
 pbs_dir = f"{ROOT_DIR}/pbs_scripts/"
 ncpus = 1
-mem = 100
+mem = 150
 jobfsmem = 1
 queue = "normal"
-project = "if69"
-walltime = "02:00:00"
+project = "fy29"
+walltime = "02:30:00"
 storage = "gdata/xp65+scratch/k10"
 command = f"""cd {ROOT_DIR}
 
@@ -37,7 +37,7 @@ mode_dict = {"Moisture Mode": "moisture.mode", "Mixed System": "mixed.system", "
 
 modes = ["Moisture Mode", "Mixed System", "IG Wave", "Eastward Moisture Mode", "Eastward Mixed System", "Eastward IG Wave", "Westward Moisture Mode", "Westward Mixed System", "Westward IG Wave", "Tropical Cyclone"]
 
-for mode in modes[0:1]:
+for mode in modes[9:10]:
     jobs_id = []
     
     env_vars["MODE"] = mode
@@ -62,4 +62,4 @@ for mode in modes[0:1]:
         submit_job.submit.submit_job(env_vars, pbs_script, jobs_id)
     
     if len(jobs_id) != 0:
-        submit_job.check.check_job_status(jobs_id)
+        submit_job.check.check_job_status(jobs_id, time_delay=10)
