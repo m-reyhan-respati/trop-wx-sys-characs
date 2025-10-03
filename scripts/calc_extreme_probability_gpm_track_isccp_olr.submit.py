@@ -13,9 +13,11 @@ lagmax = 0
 lags = np.arange(-lagmax, lagmax + 1.0, 1.0) * 3.0
 
 env_vars = {}
-env_vars["FILE_NAME"] = "precipitation"
-env_vars["VAR_NAME"] = "precipitation"
-env_vars["DIRI"] = f"{SCRATCH_GPM_DIR}/3hr_mean_{env_vars['FILE_NAME']}/"
+env_vars["FILE_NAME"] = "mean_intensity"
+env_vars["VAR_NAME"] = "mean_intensity"
+env_vars["PERCENTILE"] = 99
+env_vars["RAINING"] = 0
+env_vars["DIRI"] = f"{SCRATCH_GPM_DIR}/3hr_{env_vars['FILE_NAME']}/"
 env_vars["DIRO"] = f"{env_vars['DIRI']}extreme_probability/"
 
 pbs_dir = f"{ROOT_DIR}/pbs_scripts/"
@@ -23,8 +25,8 @@ ncpus = 1
 mem = 150
 jobfsmem = 1
 queue = "normal"
-project = "fy29"
-walltime = "02:30:00"
+project = "ng72"
+walltime = "04:00:00"
 storage = "gdata/xp65+scratch/k10"
 command = f"""cd {ROOT_DIR}
 
@@ -36,7 +38,7 @@ mode_dict = {"Moisture Mode": "moisture.mode", "Mixed System": "mixed.system", "
 
 modes = ["Moisture Mode", "Mixed System", "IG Wave", "Eastward Moisture Mode", "Eastward Mixed System", "Eastward IG Wave", "Westward Moisture Mode", "Westward Mixed System", "Westward IG Wave", "Tropical Cyclone"]
 
-for mode in modes[9:10]:
+for mode in modes[0:3]:
     jobs_id = []
     
     env_vars["MODE"] = mode
@@ -44,8 +46,12 @@ for mode in modes[9:10]:
     for lag in lags:
         env_vars["LAG"] = lag
         
-        files = sorted(glob(f"{env_vars['DIRO']}extreme.probability.{env_vars['FILE_NAME']}.{mode_dict[mode]}.lag.{env_vars['LAG']:.0f}.nc"))
-        name = f"{script_filename[:-3]}__{env_vars['FILE_NAME']}_{mode_dict[mode]}_lag_{env_vars['LAG']:.0f}"
+        if env_vars["RAINING"] == 1:
+            files = sorted(glob(f"{env_vars['DIRO']}raining/extreme.probability.{env_vars['PERCENTILE']:d}p.raining.{env_vars['FILE_NAME']}.{mode_dict[mode]}.lag.{env_vars['LAG']:.0f}.nc"))
+            name = f"{script_filename[:-3]}__{env_vars['PERCENTILE']:d}p_raining_{env_vars['FILE_NAME']}_{mode_dict[mode]}_lag_{env_vars['LAG']:.0f}"
+        else:
+            files = sorted(glob(f"{env_vars['DIRO']}extreme.probability.{env_vars['PERCENTILE']:d}p.{env_vars['FILE_NAME']}.{mode_dict[mode]}.lag.{env_vars['LAG']:.0f}.nc"))
+            name = f"{script_filename[:-3]}__{env_vars['PERCENTILE']:d}p_{env_vars['FILE_NAME']}_{mode_dict[mode]}_lag_{env_vars['LAG']:.0f}"
         
         if len(files) != 0:
             continue
