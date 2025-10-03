@@ -17,14 +17,14 @@ if (percentile < 0) | (percentile > 100):
     sys.exit("Percentile must be between 0 and 100, inclusive")
 
 if lat_min < 0:
-    lat_min_string = f"{np.abs(lat_min):.2f}S"
+    lat_min_string = f"{np.abs(lat_min + 0.05):.2f}S"
 else:
-    lat_min_string = f"{lat_min:.2f}N"
+    lat_min_string = f"{lat_min + 0.05:.2f}N"
 
 if lat_max < 0:
-    lat_max_string = f"{np.abs(lat_max):.2f}S"
+    lat_max_string = f"{np.abs(lat_max - 0.05):.2f}S"
 else:
-    lat_max_string = f"{lat_max:.2f}N"
+    lat_max_string = f"{lat_max - 0.05:.2f}N"
 
 def _preprocess(ds):
     return ds.sel(lat=slice(lat_min, lat_max))
@@ -36,7 +36,6 @@ ds = xr.open_mfdataset(files, preprocess=_preprocess)
 precipitation = ds["precipitation"].compute()
 
 precipitation *= 3.0
-precipitation = xr.where(precipitation > 0.0, precipitation, np.nan)
 precipitation = precipitation.assign_attrs({"units": "mm"})
 
 precipitation_ALL_percentile = precipitation.quantile(percentile / 100, dim="time", keep_attrs=True, skipna=True)

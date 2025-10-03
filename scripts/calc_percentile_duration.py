@@ -17,14 +17,14 @@ if (percentile < 0) | (percentile > 100):
     sys.exit("Percentile must be between 0 and 100, inclusive")
 
 if lat_min < 0:
-    lat_min_string = f"{np.abs(lat_min):.2f}S"
+    lat_min_string = f"{np.abs(lat_min + 0.05):.2f}S"
 else:
-    lat_min_string = f"{lat_min:.2f}N"
+    lat_min_string = f"{lat_min + 0.05:.2f}N"
 
 if lat_max < 0:
-    lat_max_string = f"{np.abs(lat_max):.2f}S"
+    lat_max_string = f"{np.abs(lat_max - 0.05):.2f}S"
 else:
-    lat_max_string = f"{lat_max:.2f}N"
+    lat_max_string = f"{lat_max - 0.05:.2f}N"
 
 def _preprocess(ds):
     return ds.sel(lat=slice(lat_min, lat_max))
@@ -34,7 +34,6 @@ files = sorted(glob(f"/scratch/k10/mr4682/data/GPM/3hr_duration/duration.*.nc"))
 ds = xr.open_mfdataset(files, preprocess=_preprocess)
 
 duration = ds["duration"].compute()
-duration = xr.where(duration > 0.0, duration, np.nan)
 
 duration_ALL_percentile = duration.quantile(percentile / 100, dim="time", keep_attrs=True, skipna=True)
 duration_DJF_percentile = duration[duration["time"].dt.season == "DJF", ...].quantile(percentile / 100, dim="time", keep_attrs=True, skipna=True)

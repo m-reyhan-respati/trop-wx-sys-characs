@@ -9,11 +9,11 @@ script_dir = f"{ROOT_DIR}/scripts/"
 script_filename = "calc_percentile_max_precipitation.py"
 
 lat_min_list = np.arange(-30.5, 30.5, 2.0)
-lat_max_list = lat_min_list + 1.9
+lat_max_list = lat_min_list + 2.0
 lat_max_list[-1] = 30.5
 
 env_vars = {}
-env_vars["PERCENTILE"] = 95
+env_vars["PERCENTILE"] = 99
 env_vars["DIRO"] = "/scratch/k10/mr4682/data/GPM/3hr_max_precipitation/percentiles/"
 
 pbs_dir = f"{ROOT_DIR}/pbs_scripts/"
@@ -38,13 +38,13 @@ for i in range(0, len(lat_min_list)):
     env_vars["LAT_MAX"] = lat_max_list[i]
     
     if lat_min_list[i] < 0:
-        lat_min_string = f"{np.abs(lat_min_list[i]):.2f}S"
+        lat_min_string = f"{np.abs(lat_min_list[i] + 0.05):.2f}S"
     else:
-        lat_min_string = f"{lat_min_list[i]:.2f}N"
+        lat_min_string = f"{lat_min_list[i] + 0.05:.2f}N"
     if lat_max_list[i] < 0:
-        lat_max_string = f"{np.abs(lat_max_list[i]):.2f}S"
+        lat_max_string = f"{np.abs(lat_max_list[i] - 0.05):.2f}S"
     else:
-        lat_max_string = f"{lat_max_list[i]:.2f}N"
+        lat_max_string = f"{lat_max_list[i] - 0.05:.2f}N"
     
     files = sorted(glob(f"{env_vars['DIRO']}max_precipitation.{env_vars['PERCENTILE']:d}p.{lat_min_string}_{lat_max_string}.nc"))
     
