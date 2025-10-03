@@ -177,6 +177,67 @@ def open_gpm_ia39_per_year(var_name, year, spd, lat_min=-90.0, lat_max=90.0, lon
     
     return x
 
+def open_gpm_ia39_per_month(var_name, year, month, spd, lat_min=-90.0, lat_max=90.0, lon_min=-180.0, lon_max=180.0):
+    month_length = {1: 31, 2: 28, 3: 31, 4: 30, 5: 31, 6: 30, 7: 31, 8: 31, 9: 30, 10: 31, 11: 30, 12: 31}
+    
+    if (year % 4) == 0:
+        month_length[2] = 29
+    
+    dates = pd.date_range(start=f"{year:04d}-{month:02d}-01", end=f"{year:04d}-{month:02d}-{month_length[month]:02d}", freq="1D")
+
+    filei = sorted(glob(f"{GPM_IA39_DIR}/{year:04d}/3B-HHR.MS.MRG.3IMERG.{dates[0].year:04d}{dates[0].month:02d}{dates[0].day:02d}*"))
+
+    if len(filei) == 0:
+        sys.exit(f"No .nc file for {dates[0].year:04d}{dates[0].month:02d}{dates[0].day:02d}")
+
+    x = xr.open_dataset(filei[0])[var_name].sel(lon=slice(lon_min, lon_max), lat=slice(lat_min, lat_max))
+
+    if len(x["time"].values) != 48:
+        print(f"Only {len(x['time'].values)} time steps!")
+
+        filei = sorted(glob(f"/g/data/k10/mr4682/data/gpm/{year:04d}/3B-HHR.MS.MRG.3IMERG.{dates[0].year:04d}{dates[0].month:02d}{dates[0].day:02d}*"))
+
+        if len(filei) == 0:
+            sys.exit(f"No .nc file for {dates[0].year:04d}{dates[0].month:02d}{dates[0].day:02d}")
+
+        x = xr.open_dataset(filei[0])[var_name].sel(lon=slice(lon_min, lon_max), lat=slice(lat_min, lat_max))
+
+    if spd == 48:
+        pass
+    elif 24 % spd == 0:
+        x = x.resample(time=f"{24 // spd:d}h").mean()
+    else:
+        sys.exit("spd must be a factor of 24 or spd must be 48")
+    
+    for i in range(1, len(dates)):
+        filei = sorted(glob(f"{GPM_IA39_DIR}/{year:04d}/3B-HHR.MS.MRG.3IMERG.{dates[i].year:04d}{dates[i].month:02d}{dates[i].day:02d}*"))
+
+        if len(filei) == 0:
+            sys.exit(f"No .nc file for {dates[i].year:04d}{dates[i].month:02d}{dates[i].day:02d}")
+
+        xi = xr.open_dataset(filei[0])[var_name].sel(lon=slice(lon_min, lon_max), lat=slice(lat_min, lat_max))
+
+        if len(xi["time"].values) != 48:
+            print(f"Only {len(x['time'].values)} time steps!")
+
+            filei = sorted(glob(f"/g/data/k10/mr4682/data/gpm/{year:04d}/3B-HHR.MS.MRG.3IMERG.{dates[i].year:04d}{dates[i].month:02d}{dates[i].day:02d}*"))
+
+            if len(filei) == 0:
+                sys.exit(f"No .nc file for {dates[i].year:04d}{dates[i].month:02d}{dates[i].day:02d}")
+
+            xi = xr.open_dataset(filei[0])[var_name].sel(lon=slice(lon_min, lon_max), lat=slice(lat_min, lat_max))
+
+        if spd == 48:
+            pass
+        elif 24 % spd == 0:
+            xi = xi.resample(time=f"{24 // spd:d}h").mean()
+        else:
+            sys.exit("spd must be a factor of 24 or spd must be 48")
+
+        x = xr.concat([x, xi], dim="time")
+
+    return x
+
 def regrid_era5_TLL_per_year(folder_name, var_name, year, spd, res_new, lat_min, lat_max, lon_min, lon_max, method="bilinear", periodic=True):
     import xesmf as xe
     
