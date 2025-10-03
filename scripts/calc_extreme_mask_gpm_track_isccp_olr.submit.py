@@ -10,14 +10,16 @@ script_dir = f"{ROOT_DIR}/scripts/"
 script_filename = "calc_extreme_mask_gpm_track_isccp_olr.py"
 
 year_start = 2000
-year_end = 2016
+year_end = 2005
 
 years = np.arange(year_start, year_end + 1, 1, dtype=int)
 
 env_vars = {}
-env_vars["FILE_NAME"] = "precipitation"
-env_vars["VAR_NAME"] = "precipitation"
-env_vars["DIRI"] = f"{SCRATCH_GPM_DIR}/3hr_mean_{env_vars['FILE_NAME']}/"
+env_vars["FILE_NAME"] = "mean_intensity"
+env_vars["VAR_NAME"] = "mean_intensity"
+env_vars["PERCENTILE"] = 95
+env_vars["RAINING"] = 0
+env_vars["DIRI"] = f"{SCRATCH_GPM_DIR}/3hr_{env_vars['FILE_NAME']}/"
 env_vars["DIRO"] = f"{env_vars['DIRI']}extreme_mask/"
 
 pbs_dir = f"{ROOT_DIR}/pbs_scripts/"
@@ -25,7 +27,7 @@ ncpus = 48
 mem = 40
 jobfsmem = 1
 queue = "normal"
-project = "fy29"
+project = "ng72"
 walltime = "01:00:00"
 storage = "gdata/xp65+scratch/k10"
 command = f"""cd {ROOT_DIR}
@@ -53,11 +55,15 @@ for year in years:
     for month in np.arange(month_start, month_end + 1, 1, dtype=int):
         env_vars["MONTH"] = month
         
-        for mode in modes[9:10]:
+        for mode in modes[0:1]:
             env_vars["MODE"] = mode
             
-            files = sorted(glob(f"{env_vars['DIRO']}extreme.mask.{env_vars['FILE_NAME']}.{mode_dict[mode]}.{env_vars['YEAR']:04d}{env_vars['MONTH']:02d}.nc"))
-            name = f"{script_filename[:-3]}__{env_vars['FILE_NAME']}_{mode_dict[mode]}_{env_vars['YEAR']:04d}{env_vars['MONTH']:02d}"
+            if env_vars["RAINING"] == 1:
+                files = sorted(glob(f"{env_vars['DIRO']}raining/extreme.mask.{env_vars['PERCENTILE']}p.{env_vars['FILE_NAME']}.{mode_dict[mode]}.{env_vars['YEAR']:04d}{env_vars['MONTH']:02d}.nc"))
+                name = f"{script_filename[:-3]}__{env_vars['PERCENTILE']}p_raining_{env_vars['FILE_NAME']}_{mode_dict[mode]}_{env_vars['YEAR']:04d}{env_vars['MONTH']:02d}"
+            else:
+                files = sorted(glob(f"{env_vars['DIRO']}extreme.mask.{env_vars['PERCENTILE']}p.{env_vars['FILE_NAME']}.{mode_dict[mode]}.{env_vars['YEAR']:04d}{env_vars['MONTH']:02d}.nc"))
+                name = f"{script_filename[:-3]}__{env_vars['PERCENTILE']}p_{env_vars['FILE_NAME']}_{mode_dict[mode]}_{env_vars['YEAR']:04d}{env_vars['MONTH']:02d}"
             
             if len(files) != 0:
                 continue

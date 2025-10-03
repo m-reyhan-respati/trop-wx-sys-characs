@@ -18,6 +18,8 @@ var_name = os.environ.get("VAR_NAME")
 year = int(os.environ.get("YEAR"))
 month = int(os.environ.get("MONTH"))
 mode = os.environ.get("MODE")
+percentile = int(os.environ.get("PERCENTILE"))
+raining = int(os.environ.get("RAINING"))
 diro = os.environ.get("DIRO")
 
 if mode == "Moisture Mode":
@@ -58,7 +60,10 @@ files = sorted(glob(f"{diri}{file_name}.*.nc"))
 if len(files) == 0:
     sys.exit(f"No .nc file for {diri}{file_name}")
 
-fileo = f"{diro}extreme.mask.{file_name}.{mode_file_name}.{year:04d}{month:02d}.nc"
+if raining == 1:
+    fileo = f"{diro}raining/extreme.mask.{percentile}p.{file_name}.{mode_file_name}.{year:04d}{month:02d}.nc"
+else:
+    fileo = f"{diro}extreme.mask.{percentile}p.{file_name}.{mode_file_name}.{year:04d}{month:02d}.nc"
 
 month_length = {1: 31, 2: 28, 3: 31, 4: 30, 5: 31, 6: 30, 7: 31, 8: 31, 9: 30, 10: 31, 11: 30, 12: 31}
 
@@ -129,21 +134,34 @@ if pd.to_datetime(track["timestr"].values).max() > pd.to_datetime(f"{year_end:04
     sys.exit()
 
 if var_name == "precipitation":
-    files_p95 = sorted(glob(f"/scratch/k10/mr4682/data/GPM/3hr_mean_{var_name}/percentiles/{var_name}.95p.*.nc"))
+    if raining == 1:
+        files_p = sorted(glob(f"/scratch/k10/mr4682/data/GPM/3hr_mean_{var_name}/percentiles/raining/{var_name}.{percentile}p.*.nc"))
+    else:
+        files_p = sorted(glob(f"/scratch/k10/mr4682/data/GPM/3hr_mean_{var_name}/percentiles/{var_name}.{percentile}p.*.nc"))
 else:
-    files_p95 = sorted(glob(f"/scratch/k10/mr4682/data/GPM/3hr_{var_name}/percentiles/{var_name}.95p.*.nc"))
+    if raining == 1:
+        files_p = sorted(glob(f"/scratch/k10/mr4682/data/GPM/3hr_{var_name}/percentiles/raining/{var_name}.{percentile}p.*.nc"))
+    else:
+        files_p = sorted(glob(f"/scratch/k10/mr4682/data/GPM/3hr_{var_name}/percentiles/{var_name}.{percentile}p.*.nc"))
 
-ds_p95 = xr.open_mfdataset(files_p95)
+ds_p = xr.open_mfdataset(files_p)
 
-p95_DJF = ds_p95[f"{var_name}_DJF_95p"].compute().expand_dims(dim="season")
-p95_MAM = ds_p95[f"{var_name}_MAM_95p"].compute().expand_dims(dim="season")
-p95_JJA = ds_p95[f"{var_name}_JJA_95p"].compute().expand_dims(dim="season")
-p95_SON = ds_p95[f"{var_name}_SON_95p"].compute().expand_dims(dim="season")
+p_ALL = ds_p[f"{var_name}_ALL_{percentile}p"].compute().expand_dims(dim="season")
+p_DJF = ds_p[f"{var_name}_DJF_{percentile}p"].compute().expand_dims(dim="season")
+p_MAM = ds_p[f"{var_name}_MAM_{percentile}p"].compute().expand_dims(dim="season")
+p_JJA = ds_p[f"{var_name}_JJA_{percentile}p"].compute().expand_dims(dim="season")
+p_SON = ds_p[f"{var_name}_SON_{percentile}p"].compute().expand_dims(dim="season")
 
-p95 = xr.concat([p95_DJF, p95_MAM, p95_JJA, p95_SON], dim="season", combine_attrs="drop")
+p = xr.concat([p_ALL, p_DJF, p_MAM, p_JJA, p_SON], dim="season", combine_attrs="drop")
 
-season = np.asarray(["DJF", "MAM", "JJA", "SON"])
+season = np.asarray(["ALL", "DJF", "MAM", "JJA", "SON"])
 season = xr.DataArray(season, dims=["season"], coords={"season": season}, attrs={"long_name": "Season"})
+
+p = p.assign_coords({"season": season})
+p = p.transpose("season", "lat", "lon")
+p = convert_lon_180_to_360(p, "lon")
+
+print(p)
 
 time = x["time"]
 
@@ -159,17 +177,14 @@ lon = xr.DataArray(lon, dims=["lon"], coords={"lon": lon}, attrs=x["lon"].attrs)
 x_size = 15.0
 y_size = 15.0
 
-lagmax = 20
-
-p95 = p95.assign_coords({"season": season, "lat": lat, "lon": lon})
-p95 = p95.transpose("season", "lat", "lon")
-p95 = convert_lon_180_to_360(p95, "lon")
-
-print(p95)
+lagmax = 1
 
 dso = xr.Dataset()
 
-extreme_mask = track_cell.stats.calc_extreme_mask_gpm(x, track, max_activity, p95, lat, lon, x_size, y_size, grid_res, lagmax, time_res)
+if raining == 1:
+    extreme_mask = track_cell.stats.calc_extreme_mask_gpm(x, track, max_activity, p, lat, lon, x_size, y_size, grid_res, lagmax, time_res, seasonal_threshold=False, raining=True)
+else:
+    extreme_mask = track_cell.stats.calc_extreme_mask_gpm(x, track, max_activity, p, lat, lon, x_size, y_size, grid_res, lagmax, time_res, seasonal_threshold=False, raining=False)
 
 print(extreme_mask)
 
