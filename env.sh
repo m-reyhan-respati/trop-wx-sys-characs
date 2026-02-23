@@ -3,8 +3,9 @@
 # Define some basic environmental variables before launching the suite
 
 # Load the analysis3 conda environment
+module purge
 module use /g/data/xp65/public/modules
-module load conda/analysis3-25.02
+module load conda/analysis3-26.01
 source /home/565/mr4682/tobac_env/bin/activate
 
 # Root directory for this repo
