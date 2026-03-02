@@ -401,3 +401,9 @@ def calc_dse(t, z):
     dse = xr.DataArray(dse, dims=t.dims, coords=t.coords, attrs={"long_name": "Dry static energy", "units": "J kg**-1"})
 
     return dse
+
+def calc_mse(t, z, q):
+    mse = t.values * 1005.0 + z.values + q.values * 2.5e+06
+    mse = xr.DataArray(mse, dims=t.dims, coords=t.coords, attrs={"long_name": "Moist static energy", "units": "J kg**-1"})
+
+    return mse
