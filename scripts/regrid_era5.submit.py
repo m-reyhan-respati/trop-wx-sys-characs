@@ -14,9 +14,9 @@ year_end = 2016
 years = np.arange(year_start, year_end + 1, 1, dtype=int)
 
 env_vars = {}
-env_vars["FOLDER_NAME"] = "vo"
-env_vars["VAR_NAME"] = "vo"
-env_vars["LEVEL_TYPE"] = "pressure-levels"
+env_vars["FOLDER_NAME"] = "sp"
+env_vars["VAR_NAME"] = "sp"
+env_vars["LEVEL_TYPE"] = "single-levels"
 env_vars["LAT_MIN"] = -30.5
 env_vars["LAT_MAX"] = -env_vars["LAT_MIN"]
 env_vars["LON_MIN"] = 0.5
@@ -40,7 +40,7 @@ source env.sh
 python3 {script_dir}{script_filename}"""
 
 # Following block of codes is for pressure-levels variables. Comment them if you want to use single-levels variables.
-
+'''
 levels = [100, 125, 150, 175, 200, 225, 250, 300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 775, 800, 825, 850, 875, 900, 925, 950, 975, 1000]
 
 for level in levels:
@@ -65,9 +65,9 @@ for level in levels:
 
     if len(jobs_id) != 0:
         submit_job.check.check_job_status(jobs_id)
-
-# Following block of codes is for single-levels variables. Comment them if you want to use pressure-levels variables.
 '''
+# Following block of codes is for single-levels variables. Comment them if you want to use pressure-levels variables.
+
 jobs_id = []
 
 for year in years:
@@ -85,5 +85,5 @@ for year in years:
     
     submit_job.submit.submit_job(env_vars, pbs_script, jobs_id)
 
-submit_job.check.check_job_status(jobs_id)
-'''
+if len(jobs_id) != 0:
+    submit_job.check.check_job_status(jobs_id)
