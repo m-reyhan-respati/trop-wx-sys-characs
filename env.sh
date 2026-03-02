@@ -12,6 +12,9 @@ source /home/565/mr4682/tobac_env/bin/activate
 export ROOT=/home/565/${USER}/trop-wx-sys-characs	# Change this to match where you clone this repo
 
 # Append modules to our python path
+export MODULES=${ROOT}/budget
+export PYTHONPATH=${MODULES}:${PYTHONPATH}
+
 export MODULES=${ROOT}/filter_mode
 export PYTHONPATH=${MODULES}:${PYTHONPATH}
 
