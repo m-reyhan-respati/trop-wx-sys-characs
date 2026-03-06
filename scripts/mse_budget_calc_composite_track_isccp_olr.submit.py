@@ -8,12 +8,12 @@ script_dir = f"{ROOT_DIR}/scripts/"
 script_filename = "mse_budget_calc_composite_track_isccp_olr.py"
 
 env_vars = {}
-env_vars["FILE_NAME"] = "vi_mse_adv_x"
-env_vars["VAR_NAME"] = "vi_mse_adv_x"
+env_vars["FILE_NAME"] = "vi_mse"
+env_vars["VAR_NAME"] = "vi_mse"
 env_vars["YEAR_START"] = 1984
 env_vars["YEAR_END"] = 2016
 env_vars["FILTERED"] = 0
-env_vars["DIRI"] = f"{SCRATCH_ERA5_DIR}/mse/budget/adv_x/"
+env_vars["DIRI"] = f"{SCRATCH_ERA5_DIR}/mse/budget/"
 env_vars["DIRO"] = f"{env_vars['DIRI']}composites/"
 
 pbs_dir = f"{ROOT_DIR}/pbs_scripts/"

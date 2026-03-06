@@ -7,12 +7,12 @@ import submit_job
 script_dir = f"{ROOT_DIR}/scripts/"
 script_filename = "mse_budget_merge_lat.py"
 
-var = "vi_mse_adv_x"
+var = "vi_mse"
 
 env_vars = {}
 env_vars["FILEI_TAIL"] = ".clim.and.anom.1984-2016"
-env_vars["DIRI"] = f"{SCRATCH_ERA5_DIR}/mse/budget/adv_x/tmp/"
-env_vars["DIRO"] = f"{SCRATCH_ERA5_DIR}/mse/budget/adv_x/"
+env_vars["DIRI"] = f"{SCRATCH_ERA5_DIR}/mse/budget/tmp/"
+env_vars["DIRO"] = f"{SCRATCH_ERA5_DIR}/mse/budget/"
 env_vars["LAT_NAME"] = "latitude"
 
 pbs_dir = f"{ROOT_DIR}/pbs_scripts/"

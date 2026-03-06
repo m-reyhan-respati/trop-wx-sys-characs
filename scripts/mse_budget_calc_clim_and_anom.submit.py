@@ -13,12 +13,12 @@ lat_max_list = lat_min_list + 4.0
 lat_max_list[-1] = 30.5
 
 env_vars = {}
-env_vars["FILE_NAME"] = "vi_mse_adv_x"
-env_vars["VAR_NAME"] = "vi_mse_adv_x"
+env_vars["FILE_NAME"] = "vi_mse"
+env_vars["VAR_NAME"] = "vi_mse"
 env_vars["YEAR_START"] = 1984
 env_vars["YEAR_END"] = 2016
 env_vars["SPD"] = 8
-env_vars["DIRI"] = f"{SCRATCH_ERA5_DIR}/mse/budget/adv_x/tmp/"
+env_vars["DIRI"] = f"{SCRATCH_ERA5_DIR}/mse/budget/tmp/"
 env_vars["DIRO"] = env_vars["DIRI"]
 
 pbs_dir = f"{ROOT_DIR}/pbs_scripts/"
