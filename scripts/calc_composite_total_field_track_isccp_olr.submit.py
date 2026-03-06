@@ -8,8 +8,8 @@ script_dir = f"{ROOT_DIR}/scripts/"
 script_filename = "calc_composite_total_field_track_isccp_olr.py"
 
 env_vars = {}
-env_vars["FILE_NAME"] = "dse"
-env_vars["VAR_NAME"] = "dse"
+env_vars["FILE_NAME"] = "w"
+env_vars["VAR_NAME"] = "w"
 env_vars["YEAR_START"] = 1984
 env_vars["YEAR_END"] = 2016
 env_vars["DIRI"] = f"{SCRATCH_ERA5_DIR}/{env_vars['FILE_NAME']}/"
