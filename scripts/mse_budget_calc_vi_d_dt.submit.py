@@ -6,7 +6,7 @@ from config import *
 import submit_job
 
 script_dir = f"{ROOT_DIR}/scripts/"
-script_filename = "mse_budget_calc_adv_y.py"
+script_filename = "mse_budget_calc_vi_d_dt.py"
 
 year_start = 1984
 year_end = 2016
@@ -15,11 +15,11 @@ years = np.arange(year_start, year_end + 1, 1, dtype=int)
 
 env_vars = {}
 env_vars["DIRI"] = f"{SCRATCH_ERA5_DIR}/"
-env_vars["DIRO"] = f"{SCRATCH_ERA5_DIR}/mse/budget/adv_y/tmp/"
+env_vars["DIRO"] = f"{SCRATCH_ERA5_DIR}/mse/budget/d_dt/tmp/"
 
 pbs_dir = f"{ROOT_DIR}/pbs_scripts/"
 ncpus = 1
-mem = 110
+mem = 75
 jobfsmem = 1
 queue = "normal"
 project = "if69"
@@ -36,7 +36,7 @@ jobs_id = []
 for year in years:
     env_vars["YEAR"] = year
 
-    files = sorted(glob(f"{env_vars['DIRO']}vi_mse_adv_y.{env_vars['YEAR']}.nc"))
+    files = sorted(glob(f"{env_vars['DIRO']}vi_mse_d_dt.{env_vars['YEAR']}.nc"))
 
     if len(files) != 0:
         continue
